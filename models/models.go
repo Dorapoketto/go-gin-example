@@ -5,6 +5,7 @@ import (
 	"github.com/Dorapoketto/go-gin-example/pkg/setting"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 	"gorm.io/gorm/schema"
 	"log"
 )
@@ -40,6 +41,7 @@ func init() {
 			TablePrefix:   tablePrefix,
 			SingularTable: true,
 		},
+		Logger: logger.Default.LogMode(logger.Info),
 	})
 
 	if err != nil {
