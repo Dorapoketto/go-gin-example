@@ -3,12 +3,12 @@ package util
 import (
 	"github.com/Dorapoketto/go-gin-example/pkg/setting"
 	"github.com/gin-gonic/gin"
-	"github.com/unknwon/com"
+	"strconv"
 )
 
 func GetPage(c *gin.Context) int {
 	result := 0
-	page, _ := com.StrTo(c.Query("page")).Int()
+	page, _ := strconv.Atoi(c.Query("page"))
 	if page > 0 {
 		result = (page - 1) * setting.PageSize
 	}
