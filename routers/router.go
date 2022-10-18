@@ -1,11 +1,14 @@
 package routers
 
 import (
+	"github.com/Dorapoketto/go-gin-example/docs"
 	"github.com/Dorapoketto/go-gin-example/middleware/jwt"
 	"github.com/Dorapoketto/go-gin-example/pkg/setting"
 	"github.com/Dorapoketto/go-gin-example/routers/api"
 	v1 "github.com/Dorapoketto/go-gin-example/routers/api/v1"
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 func InitRouter() *gin.Engine {
@@ -16,6 +19,8 @@ func InitRouter() *gin.Engine {
 	r.Use(gin.Recovery())
 
 	gin.SetMode(setting.RunMode)
+	docs.SwaggerInfo.BasePath = "/api/v1"
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	r.GET("/auth", api.GetAuth)
 
