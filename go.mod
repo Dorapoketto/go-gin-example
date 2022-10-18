@@ -43,6 +43,6 @@ replace (
 	github.com/Dorapoketto/go-gin-example/models => ./models
 	github.com/Dorapoketto/go-gin-example/pkg/e => ./pkg/e
 	github.com/Dorapoketto/go-gin-example/pkg/setting => ./pkg/setting
-
+	github.com/Dorapoketto/go-gin-example/pkg/logging => ./pkg/logging
 	github.com/Dorapoketto/go-gin-example/routers => ./routers
 )
