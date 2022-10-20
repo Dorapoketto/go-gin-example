@@ -1,10 +1,5 @@
 package models
 
-import (
-	"gorm.io/gorm"
-	"time"
-)
-
 type Article struct {
 	Model
 
@@ -19,15 +14,15 @@ type Article struct {
 	State      int    `json:"state"`
 }
 
-func (a *Article) BeforeCreate(tx *gorm.DB) (err error) {
-	tx.Statement.SetColumn("CreatedOn", time.Now().UnixMilli())
-	return
-}
-
-func (a *Article) BeforeUpdate(tx *gorm.DB) (err error) {
-	tx.Statement.SetColumn("ModifiedOn", time.Now().UnixMilli())
-	return
-}
+//func (a *Article) BeforeCreate(tx *gorm.DB) (err error) {
+//	tx.Statement.SetColumn("CreatedOn", time.Now().UnixMilli())
+//	return
+//}
+//
+//func (a *Article) BeforeUpdate(tx *gorm.DB) (err error) {
+//	tx.Statement.SetColumn("ModifiedOn", time.Now().UnixMilli())
+//	return
+//}
 
 func ExistArticleById(id int) bool {
 	var article Article

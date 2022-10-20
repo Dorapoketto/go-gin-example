@@ -8,6 +8,8 @@ import (
 	"gorm.io/gorm/logger"
 	"gorm.io/gorm/schema"
 	"log"
+	"reflect"
+	"time"
 )
 
 var db *gorm.DB
@@ -36,9 +38,12 @@ func init() {
 	tablePrefix = sec.Key("TABLE_PREFIX").String()
 
 	dsn := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&parseTime=True&loc=Local", user, password, host, dbName)
+
+	// 连接数据库
 	db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{
 		NamingStrategy: schema.NamingStrategy{
-			TablePrefix:   tablePrefix,
+			TablePrefix: tablePrefix,
+			// 自动创建表时，表明不加S
 			SingularTable: true,
 		},
 		Logger: logger.Default.LogMode(logger.Info),
@@ -48,10 +53,20 @@ func init() {
 		log.Println(err)
 	}
 
-	sqlDB, err := db.DB()
+	db.Callback().Create().Before("gorm:create").Register("gorm:update_time_stamp", updateTimeStampForCreateCallback)
+	db.Callback().Update().Before("gorm:update").Register("gorm:update_time_stamp", updateTimeStampForUpdateCallback)
 
-	sqlDB.SetMaxIdleConns(10)
-	sqlDB.SetMaxOpenConns(100)
+	// 获取sql 连接
+	sqlDB, _ := db.DB()
+
+	// 设置 sql 连接属性
+	// 空闲模式中与数据库最大连接数
+	sqlDB.SetMaxIdleConns(50)
+	// 设置与数据库的最大连接数
+	sqlDB.SetMaxOpenConns(1000)
+	// 最长连接时间
+	sqlDB.SetConnMaxLifetime(time.Minute)
+
 }
 
 func CloseDB() {
@@ -60,4 +75,30 @@ func CloseDB() {
 	if err != nil {
 		log.Println(err)
 	}
+}
+
+func updateTimeStampForCreateCallback(db *gorm.DB) {
+	ctx := db.Statement.Context
+	timeFieldsToInit := []string{"CreatedOn", "ModifiedOn"}
+	for _, field := range timeFieldsToInit {
+
+		if timeField := db.Statement.Schema.LookUpField(field); timeField != nil {
+			switch db.Statement.ReflectValue.Kind() {
+			case reflect.Slice, reflect.Array:
+				for i := 0; i < db.Statement.ReflectValue.Len(); i++ {
+					if _, isZero := timeField.ValueOf(ctx, db.Statement.ReflectValue.Index(i)); isZero {
+						timeField.Set(ctx, db.Statement.ReflectValue.Index(i), time.Now().UnixMilli())
+					}
+				}
+			case reflect.Struct:
+				if _, isZero := timeField.ValueOf(ctx, db.Statement.ReflectValue); isZero {
+					timeField.Set(ctx, db.Statement.ReflectValue, time.Now().UnixMilli())
+				}
+			}
+		}
+	}
+}
+
+func updateTimeStampForUpdateCallback(db *gorm.DB) {
+	db.Statement.SetColumn("ModifiedOn", time.Now().UnixMilli())
 }
