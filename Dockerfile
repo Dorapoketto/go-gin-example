@@ -1,4 +1,4 @@
-FROM golang:latest
+FROM golang:1.19-alpine
 
 ENV GOPROXY https://goproxy.cn,direct
 WORKDIR $GOPATH/src/github.com/Dorapoketto/go-gin-example

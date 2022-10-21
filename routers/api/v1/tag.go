@@ -1,9 +1,9 @@
 package v1
 
 import (
+	"github.com/Dorapoketto/go-gin-example/conf"
 	"github.com/Dorapoketto/go-gin-example/models"
 	"github.com/Dorapoketto/go-gin-example/pkg/e"
-	"github.com/Dorapoketto/go-gin-example/pkg/setting"
 	"github.com/Dorapoketto/go-gin-example/pkg/util"
 	"github.com/astaxie/beego/validation"
 	"github.com/gin-gonic/gin"
@@ -30,7 +30,7 @@ func GetTags(c *gin.Context) {
 	}
 
 	code := e.SUCCESS
-	data["lists"] = models.GetTags(util.GetPage(c), setting.PageSize, maps)
+	data["lists"] = models.GetTags(util.GetPage(c), conf.PageSize, maps)
 	data["total"] = models.GetTagTotal(maps)
 
 	c.JSON(http.StatusOK, gin.H{
@@ -40,12 +40,15 @@ func GetTags(c *gin.Context) {
 	})
 }
 
-// @Summary 新增文章标签
+// AddTag
+// @Summary 新增标签
 // @Produce  json
-// @Param name query string true "Name"
-// @Param state query int false "State"
-// @Param created_by query int false "CreatedBy"
-// @Success 200 {string} json "{"code":200,"data":{},"msg":"ok"}"
+// @Param name body string true "标签名称" minlength(3) maxlength(100)
+// @Param state body int false "状态" Enums(0, 1) default(1)
+// @Param created_by body string true "创建者" minlength(3) maxlength(100)
+// @Success 200 {object} models.Tag "成功"
+// @Failure 400 {object} errcode.Error "请求错误"
+// @Failure 500 {object} errcode.Error "内部错误"
 // @Router /api/v1/tags [post]
 func AddTag(c *gin.Context) {
 	name := c.Query("name")

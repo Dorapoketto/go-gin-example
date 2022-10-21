@@ -1,10 +1,10 @@
 package v1
 
 import (
+	"github.com/Dorapoketto/go-gin-example/conf"
 	"github.com/Dorapoketto/go-gin-example/models"
 	"github.com/Dorapoketto/go-gin-example/pkg/e"
 	"github.com/Dorapoketto/go-gin-example/pkg/logging"
-	"github.com/Dorapoketto/go-gin-example/pkg/setting"
 	"github.com/Dorapoketto/go-gin-example/pkg/util"
 	"github.com/astaxie/beego/validation"
 	"github.com/gin-gonic/gin"
@@ -67,7 +67,7 @@ func GetArticles(c *gin.Context) {
 	if !valid.HasErrors() {
 		code = e.SUCCESS
 
-		data["lists"] = models.GetArticles(util.GetPage(c), setting.PageSize, maps)
+		data["lists"] = models.GetArticles(util.GetPage(c), conf.PageSize, maps)
 		data["total"] = models.GetArticleTotal(maps)
 
 	} else {

@@ -2,7 +2,7 @@ package models
 
 import (
 	"fmt"
-	"github.com/Dorapoketto/go-gin-example/pkg/setting"
+	"github.com/spf13/viper"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -24,20 +24,17 @@ func init() {
 	var (
 		err                                       error
 		dbName, user, password, host, tablePrefix string
+		port                                      int
 	)
 
-	sec, err := setting.Cfg.GetSection("database")
-	if err != nil {
-		log.Fatal(2, "Fail to get section 'database': %v", err)
-	}
+	dbName = viper.GetString("mysql.name")
+	user = viper.GetString("mysql.user")
+	password = viper.GetString("mysql.password")
+	host = viper.GetString("mysql.host")
+	port = viper.GetInt("mysql.port")
+	tablePrefix = viper.GetString("mysql.table_prefix")
 
-	dbName = sec.Key("NAME").String()
-	user = sec.Key("USER").String()
-	password = sec.Key("PASSWORD").String()
-	host = sec.Key("HOST").String()
-	tablePrefix = sec.Key("TABLE_PREFIX").String()
-
-	dsn := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&parseTime=True&loc=Local", user, password, host, dbName)
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8&parseTime=True&loc=Local", user, password, host, port, dbName)
 
 	// 连接数据库
 	db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{

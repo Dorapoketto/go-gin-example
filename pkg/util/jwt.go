@@ -2,12 +2,12 @@ package util
 
 import (
 	"errors"
-	"github.com/Dorapoketto/go-gin-example/pkg/setting"
+	"github.com/Dorapoketto/go-gin-example/conf"
 	"github.com/golang-jwt/jwt/v4"
 	"time"
 )
 
-var jwtSecret = []byte(setting.JwtSecret)
+var jwtSecret = []byte(conf.JwtSecret)
 
 type Claims struct {
 	Username string `json:"username"`

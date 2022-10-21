@@ -1,0 +1,19 @@
+RunMode: debug
+app:
+  page_size: 20
+
+jwt:
+  secret: 23347$321
+
+server:
+  port: 8080
+  ReadTimeOut: 60
+  WriteTimeOut: 60
+
+mysql:
+  user: root
+  password: 11235813
+  host: 127.0.0.1
+  port: 3306
+  name: blog
+  table_prefix: blog_
